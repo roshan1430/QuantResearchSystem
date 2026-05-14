@@ -1,0 +1,14 @@
+{
+  "source_name": "nasa",
+  "event_type": "apod",
+  "title": "Spiral Galaxy Study Reference",
+  "timestamp": "2026-05-08T10:00:00Z",
+  "payload": {
+    "date": "2026-05-08",
+    "title": "Spiral Galaxy Study Reference",
+    "media_type": "image",
+    "service_version": "v1",
+    "url": "https://api.nasa.gov/assets/example-apod.jpg",
+    "explanation": "Cached sample payload used to simulate a NASA public science metadata event in local research demos."
+  }
+}

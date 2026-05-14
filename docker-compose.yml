@@ -1,0 +1,123 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg16
+    container_name: quant_postgres
+    environment:
+      POSTGRES_DB: quant_platform
+      POSTGRES_USER: quant_user
+      POSTGRES_PASSWORD: quant_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/home/postgres/pgdata/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quant_user -d quant_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    container_name: quant_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: quant_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.10.2
+    container_name: quant_mlflow
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+
+  ml-engine:
+    build:
+      context: ./ml-engine
+    container_name: quant_ml_engine
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    depends_on:
+      - mlflow
+    ports:
+      - "8001:8001"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: quant_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://quant_user:quant_password@postgres:5432/quant_platform
+      ML_ENGINE_URL: http://ml-engine:8001
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_METRIC_TOPIC: processed_features
+      KAFKA_ANOMALY_TOPIC: anomaly_events
+      KAFKA_ALERT_TOPIC: system_alerts
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      ml-engine:
+        condition: service_started
+    ports:
+      - "8000:8000"
+
+  streaming-processor:
+    build:
+      context: ./streaming
+    container_name: quant_stream_processor
+    command: ["python", "processor.py", "--brokers", "kafka:9092"]
+    depends_on:
+      - kafka
+
+  streaming-producer:
+    build:
+      context: ./streaming
+    container_name: quant_stream_producer
+    command: ["python", "producer.py", "--brokers", "kafka:9092", "--rate", "4", "--anomaly-prob", "0.03", "--drift"]
+    depends_on:
+      - kafka
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: quant_frontend
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_WS_URL: ws://localhost:8000/ws/live
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
+  mlflow_data:

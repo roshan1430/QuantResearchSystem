@@ -1,0 +1,17 @@
+{
+  "source_name": "cern",
+  "event_type": "custom_json_feed",
+  "title": "Cryogenic Stability Event",
+  "timestamp": "2026-05-08T10:00:00Z",
+  "payload": {
+    "facility": "CERN",
+    "beamline": "LHC-aux",
+    "subsystem": "cryogenics",
+    "sensor_id": "cryo_pump_A1",
+    "temperature_k": 4.231,
+    "pressure_atm": 1.005,
+    "vibration_mms": 0.054,
+    "status": "nominal",
+    "note": "Cached sample payload for local demos when a real CERN JSON endpoint is not available."
+  }
+}

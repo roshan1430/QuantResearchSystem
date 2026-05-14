@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.env
+mlruns/
+venv/
+local_platform.db
+deployment/logs/
+experiments/manifests/
+experiments/runs/
+experiments/models/
+datasets/generated/
+*.log

@@ -23,6 +23,23 @@ function formatFixed(value, digits = 3) {
   return Number.isFinite(num) ? num.toFixed(digits) : '0.000';
 }
 
+function getForecastModelSummary(catalog) {
+  const trainedModel = catalog.find((item) => item.task_type === 'forecasting' && item.status === 'trained');
+  if (trainedModel) {
+    return { name: trainedModel.model_name, status: trainedModel.status, accent: 'text-emerald-300', chip: 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200' };
+  }
+  const fallbackModel = catalog.find((item) => item.task_type === 'forecasting');
+  if (fallbackModel) {
+    return {
+      name: fallbackModel.model_name,
+      status: fallbackModel.status,
+      accent: 'text-amber-300',
+      chip: 'border-amber-400/25 bg-amber-500/10 text-amber-200',
+    };
+  }
+  return { name: 'unavailable', status: 'unknown', accent: 'text-slate-400', chip: 'border-slate-700 bg-slate-900/70 text-slate-300' };
+}
+
 const pages = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
   { id: 'stream', label: 'Live Stream Monitor', icon: Radio },
@@ -94,8 +111,9 @@ function StatCard({ label, value, accent }) {
 }
 
 function DashboardPage() {
-  const { liveMetrics, anomalies, forecast, isConnected } = useStore();
+  const { liveMetrics, anomalies, forecast, isConnected, catalog } = useStore();
   const latest = liveMetrics.at(-1);
+  const forecastModel = getForecastModelSummary(catalog);
 
   return (
     <PageShell
@@ -141,8 +159,15 @@ function DashboardPage() {
       </div>
 
       <div className="panel">
-        <p className="panel-label">Forecast Summary</p>
-        <h2 className="panel-title">Current Horizon Projection</h2>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="panel-label">Forecast Summary</p>
+            <h2 className="panel-title">Current Horizon Projection</h2>
+          </div>
+          <div className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.22em] ${forecastModel.chip}`}>
+            {forecastModel.status}
+          </div>
+        </div>
         <div className="mt-4 grid gap-3 md:grid-cols-4">
           {forecast.slice(0, 4).map((point) => (
             <div key={point.step} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
@@ -152,6 +177,7 @@ function DashboardPage() {
           ))}
           {forecast.length === 0 && <p className="text-sm text-slate-500">Forecast context will appear after the first API refresh.</p>}
         </div>
+        <p className={`mt-4 text-xs uppercase tracking-[0.18em] ${forecastModel.accent}`}>Active forecast model: {forecastModel.name}</p>
       </div>
     </PageShell>
   );
@@ -230,15 +256,24 @@ function AnomalyPage() {
 }
 
 function ForecastPage() {
-  const { forecast } = useStore();
+  const { forecast, catalog } = useStore();
+  const forecastModel = getForecastModelSummary(catalog);
   return (
     <PageShell
       title="Forecasting"
       subtitle="Short-horizon forecasts generated from the model-serving engine for controlled extrapolation studies."
     >
       <div className="panel">
-        <p className="panel-label">Forecast Horizon</p>
-        <h2 className="panel-title">Projected Temperature Track</h2>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="panel-label">Forecast Horizon</p>
+            <h2 className="panel-title">Projected Temperature Track</h2>
+          </div>
+          <div className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.22em] ${forecastModel.chip}`}>
+            {forecastModel.status}
+          </div>
+        </div>
+        <p className={`mt-3 text-xs uppercase tracking-[0.18em] ${forecastModel.accent}`}>Active model: {forecastModel.name}</p>
         <div className="mt-5 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
           {forecast.map((point) => (
             <div key={point.step} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
@@ -275,7 +310,21 @@ function MetricsPage() {
                 <td className="px-3 py-2">{item.model_name}</td>
                 <td className="px-3 py-2">{item.task_type}</td>
                 <td className="px-3 py-2">{item.framework}</td>
-                <td className="px-3 py-2">{item.status}</td>
+                <td className="px-3 py-2">
+                  <span
+                    className={`rounded-full border px-2 py-1 text-[11px] uppercase tracking-[0.18em] ${
+                      item.status === 'trained'
+                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                        : item.status.includes('baseline')
+                          ? 'border-amber-400/25 bg-amber-500/10 text-amber-200'
+                          : item.status === 'online'
+                            ? 'border-cyan-400/25 bg-cyan-500/10 text-cyan-200'
+                            : 'border-slate-700 bg-slate-900/70 text-slate-300'
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

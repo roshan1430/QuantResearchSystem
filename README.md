@@ -1,6 +1,11 @@
-# Real-Time Time-Series Intelligence Platform
+# QuantResearchSystem
 
-Research-grade monorepo for time-series ingestion, feature engineering, anomaly detection, forecasting, experiment tracking, and scientific dashboards, framed around NASA and CERN-style research telemetry.
+Real-time scientific intelligence platform for streaming telemetry, anomaly detection, forecasting, and experiment tracking, framed around NASA and CERN-style research workflows.
+
+## Why This Project
+- turns raw research-style telemetry into engineered features, live alerts, forecasts, and experiment records
+- combines a FastAPI backend, ML service, streaming layer, and React dashboard in one reproducible system
+- supports both local demo mode and stronger real-data training through the NASA POWER pipeline
 
 ## Platform goals
 - ingest raw time-series measurements into a streaming backbone

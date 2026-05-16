@@ -1,0 +1,21 @@
+project:
+  name: QuantResearchSystem
+  objective: market_regime_detection_and_adaptive_strategy_research
+
+execution:
+  seed: 42
+  logging_level: INFO
+  forecast_horizon: 5
+  walk_forward:
+    train_fraction: 0.70
+    validation_fraction: 0.15
+    step_fraction: 0.10
+
+backtesting:
+  transaction_cost_bps: 10
+  slippage_bps: 5
+  rebalance_frequency: daily
+
+tracking:
+  provider: mlflow
+  experiment_name: market-regime-research

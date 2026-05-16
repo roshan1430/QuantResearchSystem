@@ -1,0 +1,24 @@
+experiment:
+  name: nasdaq_regime_transformer
+  artifact_dir: artifacts/nasdaq_regime_transformer
+
+data:
+  symbol: QQQ
+  start: "2017-01-01"
+  end: "2024-12-31"
+  interval: 1d
+
+model:
+  name: transformer
+  target: target_return
+  sequence_length: 30
+  horizon: 5
+
+evaluation:
+  benchmark_symbol: ^IXIC
+  metrics:
+    - mae
+    - rmse
+    - sharpe_ratio
+    - max_drawdown
+    - cagr

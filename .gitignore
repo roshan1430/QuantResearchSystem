@@ -13,3 +13,7 @@ experiments/runs/
 experiments/models/
 datasets/generated/
 *.log
+artifacts/
+reports/
+data/
+*.egg-info/

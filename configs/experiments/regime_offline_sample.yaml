@@ -1,0 +1,24 @@
+experiment:
+  name: offline_sample_random_forest
+  artifact_dir: artifacts/offline_sample_random_forest
+
+data:
+  symbol: SAMPLE
+  csv_path: datasets/sample_market_ohlcv.csv
+
+model:
+  name: random_forest
+  target: target_return
+  feature_family:
+    - momentum
+    - volatility
+    - lag
+    - trend
+
+evaluation:
+  metrics:
+    - mae
+    - rmse
+    - sharpe_ratio
+    - max_drawdown
+    - cagr

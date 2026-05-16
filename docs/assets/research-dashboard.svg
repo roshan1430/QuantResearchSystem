@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#0b1220"/>
+  <rect x="28" y="28" width="1224" height="664" rx="22" fill="#111827" stroke="#334155"/>
+  <text x="60" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#f8fafc">Research Dashboard Mockup</text>
+  <text x="60" y="108" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#94a3b8">Regime classification, forecasts, and portfolio diagnostics</text>
+  <rect x="60" y="140" width="340" height="150" rx="16" fill="#172554"/>
+  <text x="84" y="185" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#dbeafe">Sharpe Ratio</text>
+  <text x="84" y="245" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="700" fill="#ffffff">1.42</text>
+  <rect x="430" y="140" width="340" height="150" rx="16" fill="#052e16"/>
+  <text x="454" y="185" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#dcfce7">CAGR</text>
+  <text x="454" y="245" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="700" fill="#ffffff">18.7%</text>
+  <rect x="800" y="140" width="392" height="150" rx="16" fill="#3f1d0d"/>
+  <text x="824" y="185" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#ffedd5">Max Drawdown</text>
+  <text x="824" y="245" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="700" fill="#ffffff">-9.4%</text>
+  <rect x="60" y="320" width="730" height="320" rx="18" fill="#0f172a" stroke="#1e293b"/>
+  <polyline points="90,560 180,520 270,540 360,470 450,490 540,430 630,450 720,390" fill="none" stroke="#38bdf8" stroke-width="6"/>
+  <polyline points="90,585 180,565 270,575 360,535 450,545 540,505 630,515 720,470" fill="none" stroke="#22c55e" stroke-width="6"/>
+  <text x="90" y="360" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#f8fafc">Equity Curve vs Benchmark</text>
+  <rect x="820" y="320" width="372" height="320" rx="18" fill="#0f172a" stroke="#1e293b"/>
+  <text x="850" y="360" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#f8fafc">Regime Mix</text>
+  <circle cx="950" cy="470" r="90" fill="#1e293b"/>
+  <path d="M950 470 L950 380 A90 90 0 0 1 1028 516 Z" fill="#22c55e"/>
+  <path d="M950 470 L1028 516 A90 90 0 0 1 886 534 Z" fill="#f59e0b"/>
+  <path d="M950 470 L886 534 A90 90 0 0 1 950 380 Z" fill="#ef4444"/>
+  <text x="850" y="585" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#cbd5e1">Trend 44%   Range 33%   Stress 23%</text>
+</svg>

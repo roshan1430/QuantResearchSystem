@@ -1,0 +1,27 @@
+experiment:
+  name: sp500_regime_random_forest
+  artifact_dir: artifacts/sp500_regime_random_forest
+
+data:
+  symbol: SPY
+  start: "2018-01-01"
+  end: "2024-12-31"
+  interval: 1d
+
+model:
+  name: random_forest
+  target: target_return
+  feature_family:
+    - momentum
+    - volatility
+    - lag
+    - trend
+
+evaluation:
+  benchmark_symbol: ^GSPC
+  metrics:
+    - mae
+    - rmse
+    - sharpe_ratio
+    - max_drawdown
+    - cagr

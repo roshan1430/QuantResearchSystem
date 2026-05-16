@@ -1,0 +1,27 @@
+experiment:
+  name: multi_asset_ppo_allocator
+  artifact_dir: artifacts/multi_asset_ppo_allocator
+
+data:
+  symbols:
+    - SPY
+    - TLT
+    - GLD
+    - QQQ
+  start: "2016-01-01"
+  end: "2024-12-31"
+  interval: 1d
+
+model:
+  name: ppo
+  reward: risk_adjusted_return
+  rebalance_frequency: weekly
+  total_timesteps: 100000
+
+evaluation:
+  benchmark_symbol: ^GSPC
+  metrics:
+    - sharpe_ratio
+    - max_drawdown
+    - cagr
+    - turnover

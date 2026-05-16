@@ -27,6 +27,7 @@ def engineer_features(frame: pd.DataFrame, lags: int = 5) -> pd.DataFrame:
     features["rsi_14"] = _rsi(close, period=14)
     features["ema_12"] = _ema(close, span=12)
     features["ema_26"] = _ema(close, span=26)
+    features["trend_gap"] = (features["ema_12"] - features["ema_26"]) / close.replace(0, np.nan)
     features["macd"] = features["ema_12"] - features["ema_26"]
     features["macd_signal"] = _ema(features["macd"], span=9)
     features["bb_mid"] = close.rolling(window=20).mean()
@@ -37,6 +38,8 @@ def engineer_features(frame: pd.DataFrame, lags: int = 5) -> pd.DataFrame:
     features["momentum_5"] = close.pct_change(periods=5)
     features["momentum_21"] = close.pct_change(periods=21)
     features["range_ratio"] = (features["high"] - features["low"]) / features["close"]
+    features["realized_volatility_5"] = returns.rolling(window=5).std() * np.sqrt(252)
+    features["drawdown_21"] = close / close.rolling(window=21).max() - 1
     features["volume_zscore_21"] = (
         (features["volume"] - features["volume"].rolling(21).mean())
         / features["volume"].rolling(21).std()
@@ -46,13 +49,5 @@ def engineer_features(frame: pd.DataFrame, lags: int = 5) -> pd.DataFrame:
         features[f"return_lag_{lag}"] = returns.shift(lag)
         features[f"volume_lag_{lag}"] = features["volume"].shift(lag)
 
-    features["regime"] = np.select(
-        condlist=[
-            (features["volatility_21"] > features["volatility_21"].rolling(63).median())
-            & (features["momentum_21"] < 0),
-            features["momentum_21"] > 0,
-        ],
-        choicelist=["stress", "trend"],
-        default="range",
-    )
+    features["regime"] = "range"
     return features.dropna()

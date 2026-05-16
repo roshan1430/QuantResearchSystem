@@ -19,6 +19,8 @@ class BacktestEngine:
         cost_rate = (self.transaction_cost_bps + self.slippage_bps) / 10_000
         strategy_returns = aligned_signals.shift(1).fillna(0.0) * returns - turnover * cost_rate
         equity_curve = (1 + strategy_returns).cumprod()
+        benchmark_curve = (1 + returns).cumprod()
+        drawdown = equity_curve / equity_curve.cummax() - 1
         report = pd.DataFrame(
             {
                 "price": prices,
@@ -27,6 +29,8 @@ class BacktestEngine:
                 "turnover": turnover,
                 "strategy_returns": strategy_returns,
                 "equity_curve": equity_curve,
+                "benchmark_curve": benchmark_curve,
+                "drawdown": drawdown,
             }
         )
         return report, compute_backtest_summary(strategy_returns, turnover)

@@ -1,3 +1,19 @@
-from quantresearch.visualization.plots import create_backtest_figure, create_regime_figure
+from quantresearch.visualization.plots import (
+    save_correlation_heatmap,
+    save_equity_curve,
+    save_feature_importance,
+    save_portfolio_allocation,
+    save_prediction_vs_actual,
+    save_regime_allocation,
+    save_regime_visualization,
+)
 
-__all__ = ["create_backtest_figure", "create_regime_figure"]
+__all__ = [
+    "save_correlation_heatmap",
+    "save_equity_curve",
+    "save_feature_importance",
+    "save_portfolio_allocation",
+    "save_prediction_vs_actual",
+    "save_regime_allocation",
+    "save_regime_visualization",
+]

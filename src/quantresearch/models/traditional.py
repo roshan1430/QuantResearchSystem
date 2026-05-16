@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 
 from quantresearch.models.base import ModelArtifact
 
@@ -46,15 +46,23 @@ class XGBoostRegimeModel:
         }
     )
     model: object | None = field(init=False, default=None)
+    backend: str = field(init=False, default="xgboost")
 
     def fit(self, features: pd.DataFrame, target: pd.Series) -> ModelArtifact:
         try:
             from xgboost import XGBRegressor
-        except ImportError as exc:
-            raise ImportError("Install the 'tree' extra to use XGBoost models.") from exc
-        self.model = XGBRegressor(**self.params)
+        except ImportError:
+            self.backend = "sklearn_gradient_boosting_fallback"
+            self.model = GradientBoostingRegressor(random_state=42)
+        else:
+            self.backend = "xgboost"
+            self.model = XGBRegressor(**self.params)
         self.model.fit(features, target)
-        return ModelArtifact(name="xgboost", task="return_forecasting", metadata=self.params)
+        return ModelArtifact(
+            name="xgboost",
+            task="return_forecasting",
+            metadata={**self.params, "backend": self.backend},
+        )
 
     def predict(self, features: pd.DataFrame) -> pd.Series:
         if self.model is None:

@@ -19,6 +19,10 @@ def test_backtest_engine_returns_report_and_summary() -> None:
         "turnover",
         "strategy_returns",
         "equity_curve",
+        "benchmark_curve",
+        "drawdown",
     ]
     assert isinstance(summary.sharpe_ratio, float)
+    assert isinstance(summary.sortino_ratio, float)
+    assert isinstance(summary.win_rate, float)
     assert report["equity_curve"].iloc[-1] > 0

@@ -24,6 +24,17 @@ def make_frame(rows: int = 120) -> pd.DataFrame:
 
 def test_feature_engineering_generates_expected_columns() -> None:
     frame = engineer_features(preprocess_ohlcv_frame(make_frame()))
-    expected = {"rsi_14", "macd", "bb_upper", "volatility_21", "momentum_21", "return_lag_5", "regime"}
+    expected = {
+        "rsi_14",
+        "macd",
+        "bb_upper",
+        "volatility_21",
+        "momentum_21",
+        "trend_gap",
+        "realized_volatility_5",
+        "drawdown_21",
+        "return_lag_5",
+        "regime",
+    }
     assert expected.issubset(frame.columns)
-    assert frame["regime"].isin(["trend", "range", "stress"]).all()
+    assert (frame["regime"] == "range").all()

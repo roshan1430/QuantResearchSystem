@@ -11,44 +11,32 @@ SRC_ROOT = PROJECT_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from quantresearch.backtesting import BacktestEngine
-from quantresearch.data.preprocessing import preprocess_ohlcv_frame
-from quantresearch.evaluation.walk_forward import walk_forward_validation
-from quantresearch.features import engineer_features
-from quantresearch.models.traditional import RandomForestRegimeModel, XGBoostRegimeModel
+from quantresearch.pipelines import RegimeResearchPipeline
+from quantresearch.research import write_model_comparison_report
 
 
 def compare_models(raw_frame: pd.DataFrame) -> pd.DataFrame:
-    dataset = engineer_features(preprocess_ohlcv_frame(raw_frame))
-    excluded = {"target_return", "regime", "open", "high", "low", "close", "volume", "log_return", "return"}
-    feature_columns = [column for column in dataset.columns if column not in excluded]
-    features = dataset[feature_columns]
-    target = dataset["target_return"]
-    backtest_engine = BacktestEngine()
-
-    candidates = {"random_forest": RandomForestRegimeModel()}
-    try:
-        candidates["xgboost"] = XGBoostRegimeModel()
-    except Exception:
-        pass
-
+    candidates = RegimeResearchPipeline.available_models()
     rows: list[dict[str, float | str]] = []
-    for name, model in candidates.items():
-        walk_forward = walk_forward_validation(
-            model=model,
-            features=features,
-            target=target,
-            train_size=max(int(len(features) * 0.7), 30),
-            test_size=max(int(len(features) * 0.1), 5),
-        )
-        signals = walk_forward.predictions.apply(lambda value: 1.0 if value > 0 else -1.0)
-        _, summary = backtest_engine.run(dataset.loc[walk_forward.predictions.index, "close"], signals)
+    for name, factory in candidates.items():
+        result = RegimeResearchPipeline(model_factory=factory).run(raw_frame)
         rows.append(
             {
                 "model": name,
-                "mae": walk_forward.mae,
-                "rmse": walk_forward.rmse,
-                **asdict(summary),
+                "mae": result.walk_forward.mae,
+                "rmse": result.walk_forward.rmse,
+                "directional_accuracy": result.walk_forward.directional_accuracy,
+                "cv_mae": result.cross_validation.mean_mae,
+                "cv_rmse": result.cross_validation.mean_rmse,
+                "cv_directional_accuracy": result.cross_validation.mean_directional_accuracy,
+                **asdict(result.backtest_summary),
             }
         )
-    return pd.DataFrame(rows).sort_values("sharpe_ratio", ascending=False)
+    return pd.DataFrame(rows).sort_values("sharpe_ratio", ascending=False).reset_index(drop=True)
+
+
+def write_comparison_artifacts(comparison: pd.DataFrame, output_dir: str | Path) -> None:
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    comparison.to_csv(output_path / "model_comparison.csv", index=False)
+    write_model_comparison_report(output_path / "model_comparison_report.md", comparison)

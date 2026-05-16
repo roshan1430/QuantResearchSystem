@@ -1,0 +1,41 @@
+{
+  "experiment": "offline_sample_random_forest",
+  "model": "random_forest",
+  "walk_forward": {
+    "mae": 0.003907000388456864,
+    "rmse": 0.0041541078470010125,
+    "directional_accuracy": 0.75
+  },
+  "cross_validation": {
+    "mean_mae": 0.0030341821864294538,
+    "mean_rmse": 0.003339582881562844,
+    "mean_directional_accuracy": 0.5833333333333334
+  },
+  "backtest_summary": {
+    "cumulative_return": 0.012765941535528569,
+    "sharpe_ratio": 5.695192739734825,
+    "sortino_ratio": 10.035949415311569,
+    "max_drawdown": -0.007210526315789445,
+    "cagr": 0.4912012902966221,
+    "volatility": 0.0706001839194482,
+    "win_rate": 0.625,
+    "turnover": 0.875
+  },
+  "baseline_backtest_summary": {
+    "cumulative_return": 0.012765941535528569,
+    "sharpe_ratio": 5.695192739734825,
+    "sortino_ratio": 10.035949415311569,
+    "max_drawdown": -0.007210526315789445,
+    "cagr": 0.4912012902966221,
+    "volatility": 0.0706001839194482,
+    "win_rate": 0.625,
+    "turnover": 0.875
+  },
+  "evaluation_metrics_requested": [
+    "mae",
+    "rmse",
+    "sharpe_ratio",
+    "max_drawdown",
+    "cagr"
+  ]
+}

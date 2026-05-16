@@ -29,3 +29,4 @@ def test_walk_forward_validation_produces_predictions() -> None:
     assert len(result.predictions) == 40
     assert result.mae >= 0
     assert result.rmse >= 0
+    assert 0 <= result.directional_accuracy <= 1

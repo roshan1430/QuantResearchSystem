@@ -13,7 +13,9 @@ experiments/runs/
 experiments/models/
 datasets/generated/
 *.log
-artifacts/
+artifacts/*
+!artifacts/offline_sample_random_forest/
+!artifacts/offline_sample_random_forest/**
 reports/
 data/
 *.egg-info/
